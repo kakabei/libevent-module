@@ -1,5 +1,5 @@
-#ifndef JMWEBSVR_PROC_H_
-#define JMWEBSVR_PROC_H_
+#ifndef HTTP_SERVER__PROC_H_
+#define HTTP_SERVER__PROC_H_
 
 #include <event2/http.h>
 #include <event2/http_struct.h>
@@ -14,7 +14,7 @@ public:
 	int Init(const char *pConfFile);
 	int Run();
 
-	int RetMsg(struct evhttp_request *req, const char *RetBuff);
+	int RetMsg(struct evhttp_request *req, const char * buff);
 	int GetVer(struct evhttp_request *req);
 
 private: 

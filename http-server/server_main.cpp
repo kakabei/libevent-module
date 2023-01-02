@@ -2,7 +2,6 @@
 #include <signal.h>
 
 #include "server_proc.h"
-// #include "util/util.h"
 
 int main(int argc, char** argv) 
 {
@@ -10,8 +9,6 @@ int main(int argc, char** argv)
         fprintf(stderr, "Usage: %s <conf_file>\n", argv[0]);
         return -1;
     }
-
-    // jmlib::CSysTool::DaemonInit();
 
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGCHLD, SIG_IGN);
