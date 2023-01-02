@@ -46,14 +46,14 @@ int CHttpSvrProc::Init(const char *pConfFile)
     }
  */
     m_nHost = (unsigned int)inet_addr("0.0.0.0");
-	m_nPort = 80; 
+	m_nPort = 8081; 
 
 	return 0;
 }
 
 void CHttpSvrProc::SignalTermHandler(int fd, short event, void *arg)
 {
-	printf("Info, SignalTermHandler=%d, event=%d\n", fd, event); 
+	printf("Info: SignalTermHandler=%d, event=%d\n", fd, event); 
 	event_base_loopbreak(base);
 }
 
@@ -76,7 +76,7 @@ int CHttpSvrProc::GetVer(struct evhttp_request *req)
 {
 	char * uri = (char*)evhttp_uri_get_query(req->uri_elems);
 	if (!uri){
-		fprintf(stderr, "Err, query uri failed.\n"); 
+		fprintf(stderr, "Error: query uri failed.\n"); 	
 		RetMsg(req, "{\"ret\":-1, \"msg\":\"param err\"}");
 		return -1;
 	}
@@ -110,7 +110,7 @@ void CHttpSvrProc::HttpGetVer(struct evhttp_request *req, void *arg)
 	if (pProc){
 		pProc->GetVer(req);
 	}else{
-		fprintf(stderr, "Err, get arg failed.\n"); 
+		fprintf(stderr, "Error: get arg failed.\n"); 
 	}
 }
 
@@ -119,7 +119,7 @@ int CHttpSvrProc::Run()
 {
 	base = event_base_new();
 	if (!base){
-		fprintf(stderr, "Err, careate event base failed.\n"); 
+		fprintf(stderr, "Error: careate event base failed.\n"); 
 		return -1;
 	}
 
@@ -130,7 +130,7 @@ int CHttpSvrProc::Run()
 
 	struct evhttp *httpd = evhttp_new(base);
 	if (!httpd){
-		fprintf(stderr, "Err, create evthttp_new failed."); 		
+		fprintf(stderr, "Error: create evthttp_new failed."); 		
 		return -1;
 	}
 
@@ -154,13 +154,13 @@ int CHttpSvrProc::Run()
 										(struct sockaddr*)&stSockAddr, 
 										sizeof(stSockAddr));
 	if (pEvListener == NULL){
-	    fprintf(stderr, "Err, creatr listener failed.\n"); 	
+	    fprintf(stderr, "Error: create listener failed.\n"); 	
 		return -1;
 	}
 
 	pEvHttpHandle = evhttp_bind_listener(httpd, pEvListener);
 	if (pEvHttpHandle == NULL){
-		fprintf(stderr, "Err,evhttp_bind_listener failed.\n");	
+		fprintf(stderr, "Error: evhttp_bind_listener failed.\n");	
 		return -1;
 	}
 
