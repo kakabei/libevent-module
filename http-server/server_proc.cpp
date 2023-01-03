@@ -53,7 +53,7 @@ int CHttpSvrProc::Init(const char *pConfFile)
 
 void CHttpSvrProc::SignalTermHandler(int fd, short event, void *arg)
 {
-	printf("Info: SignalTermHandler=%d, event=%d\n", fd, event); 
+	fprintf(stdout, "Info: SignalTermHandler=%d, event=%d\n", fd, event); 
 	event_base_loopbreak(base);
 }
 
@@ -87,13 +87,13 @@ int CHttpSvrProc::GetVer(struct evhttp_request *req)
 	free(decode_uri);
 
 	const char * product	= evhttp_find_header(&http_query, "product");
-	const char * guid		= evhttp_find_header(&http_query, "guid");
+    const char * guid		= evhttp_find_header(&http_query, "guid");
 	const char * zone		= evhttp_find_header(&http_query, "zone");
 	const char * ver		= evhttp_find_header(&http_query, "ver");
 
 	char new_ver[64] = "10.20.30";
 
-	printf("Get ver product=%s,guid=%s, zone=%s, ver=%s, new_ver=%s\n",product, guid, zone, ver, new_ver); 
+	fprintf(stdout, "Get ver product=%s,guid=%s, zone=%s, ver=%s, new_ver=%s\n",product, guid, zone, ver, new_ver); 
 
 	char buff[1024] = {0};
 	snprintf(buff, sizeof(buff), "{\"ret\":0, \"msg\":\"ok\", \"product\":\"%s\", \"new_ver\":\"%s\"}", product, new_ver);

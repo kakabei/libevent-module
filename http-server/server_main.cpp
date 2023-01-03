@@ -2,13 +2,16 @@
 #include <signal.h>
 
 #include "server_proc.h"
+#include "util/systool.h"
 
 int main(int argc, char** argv) 
 {
     if (argc < 2){
         fprintf(stderr, "Usage: %s <conf_file>\n", argv[0]);
         return -1;
-    }
+	}
+
+	kkb::CSysTool::DaemonInit();
 
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGCHLD, SIG_IGN);
