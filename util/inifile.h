@@ -2,10 +2,9 @@
  * @file:     inifile.h
  * @Author:   fangsh
  * @email:    1447675994@qq.com
- * @data:     2023年01月03日 星期二 14时27分05秒
+ * @data:     2023/01/03
  * @brief:   
  */
-
 
 #ifndef _INI_FILE_
 #define _INI_FILE_
@@ -30,10 +29,10 @@ public:
                 const char *sDefault, char *sValue, const int nValueLen);
 
     int GetInt(const char *sSection, const char *sItem, const int nDefault,
-            int *nValue);
+                int *nValue);
 
     int GetULongLong(const char *szSection, const char *szItem, unsigned long long ullDefault,
-            unsigned long long *pullValue);
+                unsigned long long *pullValue);
 
     bool IsValid();
 

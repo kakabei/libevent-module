@@ -2,7 +2,7 @@
  * @file:     systool.h
  * @Author:   fangsh
  * @email:    1447675994@qq.com
- * @data:     2023年01月03日 星期二 14时18分10秒
+ * @data:      2023/01/03
  * @brief:   
  */
 
