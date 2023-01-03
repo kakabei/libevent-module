@@ -2,7 +2,7 @@
  * @file:     server_proc.cpp
  * @Author:   fangsh
  * @email:    1447675994@qq.com
- * @data:     2023年01月03日 星期二 14时27分05秒
+ * @data:     2023/01/03
  * @brief:   
  */
 
@@ -24,6 +24,19 @@
 
 
 struct event_base* base;
+
+CHttpSvrProc::CHttpSvrProc()
+: m_nHost(0)
+, m_nPort(8080) 	
+, m_nTimeout(30)
+{
+
+}
+
+CHttpSvrProc::~CHttpSvrProc()
+{
+
+}
 
 int CHttpSvrProc::Init(const char *pConfFile)
 {
@@ -71,13 +84,18 @@ int CHttpSvrProc::RetMsg(struct evhttp_request *req, const char *buff)
 	return 0;
 }
 
-int CHttpSvrProc::GetVer(struct evhttp_request *req)
+std::string CHttpSvrProc::FindHttpHeader(struct evhttp_request * req, const char * key)
 {
+    if (req == NULL){
+        fprintf(stderr, "Error: query req failed.\n"); 
+        return NULL ;
+    };
+
 	char * uri = (char*)evhttp_uri_get_query(req->uri_elems);
 	if (!uri){
 		fprintf(stderr, "Error: query uri failed.\n"); 	
 		RetMsg(req, "{\"ret\":-1, \"msg\":\"param err\"}");
-		return -1;
+		return NULL;
 	}
 
 	char * decode_uri = strdup((char*)evhttp_uri_get_query(req->uri_elems));
@@ -85,25 +103,36 @@ int CHttpSvrProc::GetVer(struct evhttp_request *req)
 	evhttp_parse_query_str(decode_uri, &http_query);
 	free(decode_uri);
 
-	const char * product	= evhttp_find_header(&http_query, "product");
-    const char * guid		= evhttp_find_header(&http_query, "guid");
-	const char * zone		= evhttp_find_header(&http_query, "zone");
-	const char * ver		= evhttp_find_header(&http_query, "ver");
-
-	char new_ver[64] = "10.20.30";
-
-	fprintf(stdout, "Get ver product=%s,guid=%s, zone=%s, ver=%s, new_ver=%s\n",product, guid, zone, ver, new_ver); 
-
-	char buff[1024] = {0};
-	snprintf(buff, sizeof(buff), "{\"ret\":0, \"msg\":\"ok\", \"product\":\"%s\", \"new_ver\":\"%s\"}", product, new_ver);
-
-	RetMsg(req, buff);
-
+    char * szValue  = (char *)evhttp_find_header(&http_query, key);
+	std::string strValue = szValue;  
+    
 	evhttp_clear_headers(&http_query); // 释放参数链表
+
+	return strValue; 
+}
+
+int CHttpSvrProc::GetVer(struct evhttp_request *req)
+{
+
+	std::string strProduct	= FindHttpHeader(req, "product");
+	std::string strGuid	= FindHttpHeader(req, "guid");
+	std::string strZone	= FindHttpHeader(req, "zone");
+	std::string strVer	= FindHttpHeader(req, "ver");
+
+	std::string strNewVersion = "10.20.30";
+	fprintf(stdout, "Get ver product=%s,guid=%s, zone=%s, ver=%s, new_ver=%s\n",
+				strProduct.c_str(), strGuid.c_str(), strZone.c_str(), strVer.c_str(), strNewVersion.c_str()); 
+
+	char szBuff[1024] = {0
+	snprintf(szBuff, sizeof(szBuff), "{\"ret\":0, \"msg\":\"ok\", \"product\":\"%s\", \"new_ver\":\"%s\"}",
+				strProduct.c_str(), strNewVersion.c_str());
+
+	RetMsg(req, szBuff);
+
 	return 0;
 }
 
-void CHttpSvrProc::HttpGetVer(struct evhttp_request *req, void *arg)
+void CHttpSvrProc::GetVerCallBack(struct evhttp_request *req, void *arg)
 {
 	CHttpSvrProc *pProc = (CHttpSvrProc*)arg;
 	if (pProc){
@@ -113,6 +142,13 @@ void CHttpSvrProc::HttpGetVer(struct evhttp_request *req, void *arg)
 	}
 }
 
+void  CHttpSvrProc::SetCallBack(struct evhttp *httpd)
+{
+	evhttp_set_timeout(httpd, m_nTimeout);
+	evhttp_set_cb(httpd, "/get_ver", GetVerCallBack, this);
+    
+    return;  
+}
 
 int CHttpSvrProc::Run()
 {
@@ -133,10 +169,9 @@ int CHttpSvrProc::Run()
 		return -1;
 	}
 
-	evhttp_set_timeout(httpd, m_nTimeout);
-	evhttp_set_cb(httpd, "/get_ver", HttpGetVer, this);
-
-	struct evhttp_bound_socket *pEvHttpHandle = NULL;
+    SetCallBack(httpd); 
+	
+    struct evhttp_bound_socket *pEvHttpHandle = NULL;
 	struct evconnlistener * pEvListener       = NULL;
 
 	struct sockaddr_in stSockAddr;

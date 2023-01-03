@@ -2,7 +2,7 @@
  * @file:     server_proc.h
  * @Author:   fangsh
  * @email:    1447675994@qq.com
- * @data:     2023年01月03日 星期二 14时27分05秒
+ * @data:      2023/01/03 
  * @brief:   
  */
 
@@ -11,18 +11,33 @@
 
 #include <event2/http.h>
 #include <event2/http_struct.h>
+#include <string>
 
 class CHttpSvrProc  
 {
 public:
+	CHttpSvrProc(); 
+	~CHttpSvrProc(); 
 
-	static void SignalTermHandler(int fd, short event, void *arg);
-	static void HttpGetVer(struct evhttp_request *req, void *arg);
+public:
 
 	int Init(const char *pConfFile);
-	int Run();
+	
+    int Run();
+    
+    void  SetCallBack(struct evhttp *xphttpd);
+
+	std::string  FindHttpHeader(struct evhttp_request * req, const char * key); 
 
 	int RetMsg(struct evhttp_request *req, const char * buff);
+
+public:
+	
+	static void SignalTermHandler(int fd, short event, void *arg);
+	
+	static void GetVerCallBack(struct evhttp_request *req, void *arg);
+
+public:
 	int GetVer(struct evhttp_request *req);
 
 private: 
