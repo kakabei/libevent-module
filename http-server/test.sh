@@ -9,3 +9,5 @@
 
 curl 127.0.0.1:8081/get_ver?product=1&guid=2&zone=3&ver=4
 
+
+scp -r *  root@81.71.24.140:/data/code/github/libevent-module

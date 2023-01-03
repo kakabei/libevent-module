@@ -1,13 +1,23 @@
+/** 
+ * @file:     server_main.cpp
+ * @Author:   fangsh
+ * @email:    1447675994@qq.com
+ * @data:     2023年01月03日 星期二 14时27分05秒
+ * @brief:   
+ */
+
 #include <stdio.h>
 #include <signal.h>
 
 #include "server_proc.h"
 #include "util/systool.h"
 
+#define USAGE_MSG   "Usage: %s  <config_file> \n" 
+
 int main(int argc, char** argv) 
 {
     if (argc < 2){
-        fprintf(stderr, "Usage: %s <conf_file>\n", argv[0]);
+        fprintf(stderr, USAGE_MSG, argv[0]);
         return -1;
 	}
 

@@ -6,6 +6,9 @@
  * @brief:   
  */
 
+#ifndef _SYS_TOOL_
+#define _SYS_TOOL_
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <string>
@@ -16,7 +19,6 @@
 
 namespace kkb
 {
-
 
 class CSysTool
 {
@@ -35,3 +37,5 @@ public:
 									
 };
 } // namespace kkb 
+
+#endif // _SYS_TOOL_

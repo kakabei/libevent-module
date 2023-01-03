@@ -12,17 +12,11 @@ TARGETS = http-server
 
 all:$(TARGETS)
 
-http-server:server_proc.o systool.o server_main.o
+http-server:server_proc.o systool.o inifile.o server_main.o
 	$(CXX) $^ $(LIBS) -o $@
 
 %.o: %.cpp
 	$(CXX) -c $(CXXFLAGS) $(INCS) $< -o $@
-
-%.pb.o: %.pb.cc
-	$(CXX) -c $(CXXFLAGS) $(INCS) $< -o $@
-
-%.pb.cc: %.proto
-	$(PROTOC) $<
 
 clean:
 	$(RM) $(TARGETS) *.o *.exe

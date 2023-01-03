@@ -1,9 +1,17 @@
+/** 
+ * @file:     server_proc.cpp
+ * @Author:   fangsh
+ * @email:    1447675994@qq.com
+ * @data:     2023年01月03日 星期二 14时27分05秒
+ * @brief:   
+ */
+
 #include "server_proc.h"
 #include <string.h>
 #include <malloc.h>
 #include <stdlib.h>
-//#include "ini_file/ini_file.h"
-//#include "log/log.h"
+#include "util/inifile.h"
+
 
 #include <string>
 #include <signal.h>
@@ -19,34 +27,25 @@ struct event_base* base;
 
 int CHttpSvrProc::Init(const char *pConfFile)
 {
-    // int LogLocal = 0;
-    // char ModuleName[32] = {0};
-    // int LogLevel = 3;
-    // char LogPath[256] = {0};
+    char szHostStr[32] = {0};
+	int nPort 			= 80; 
+	int nTimeout 		= 30; 
 
-    // char HostStr[32] = {0};
-/*
-    CIniFile CurConf(pConfFile);
+    kkb::CIniFile iniConf(pConfFile);
+    if (!iniConf.IsValid()){
+		fprintf(stderr, "Error: conf file is not valid, config=%s\n", pConfFile);
+		return -1; 
+	}
+    
+	iniConf.GetString("HTTPSVR", "Host", "0.0.0.0", szHostStr, sizeof(szHostStr));
+    iniConf.GetInt("HTTPSVR", "Port", 8080, &nPort);
+    iniConf.GetInt("HTTPSVR", "TimeOut", 30, &nTimeout);
+       
+    m_nHost 	= (unsigned int)inet_addr(szHostStr);
+	m_nPort 	= (unsigned int)nPort; 
+	m_nTimeout 	= (unsigned int)nTimeout; 
 
-    if (CurConf.IsValid())
-    {
-        CurConf.GetString("JMWEBSVR", "Host", "0.0.0.0", HostStr, sizeof(HostStr));
-        CurConf.GetInt("JMWEBSVR", "Port", 80, &m_Port);
-        CurConf.GetInt("JMWEBSVR", "TimeOut", 30, &m_Timeout);
-
-        CurConf.GetInt("JMWEBSVR", "LogLocal", 0, &LogLocal);
-        CurConf.GetString("JMWEBSVR", "ModuleName", "jmwebsvr", ModuleName, sizeof(ModuleName));
-        CurConf.GetInt("JMWEBSVR", "LogLevel", 3, &LogLevel);
-        CurConf.GetString("JMWEBSVR", "LogPath", "log", LogPath, sizeof(LogPath));
-    }
-    else
-    {
-        printf("ERR:conf file is not valid, conf=%s\n", pConfFile);
-        return -1;
-    }
- */
-    m_nHost = (unsigned int)inet_addr("0.0.0.0");
-	m_nPort = 8081; 
+	fprintf(stdout, "Http Server Info: Host=%s, Port=%d,TimeOut=%d\n", szHostStr, nPort,nTimeout); 
 
 	return 0;
 }
