@@ -12,7 +12,7 @@ TARGETS = http-server
 
 all:$(TARGETS)
 
-http-server:server_proc.o systool.o inifile.o server_main.o
+http-server:server_proc.o systerm_tool.o ini_file.o server_main.o
 	$(CXX) $^ $(LIBS) -o $@
 
 %.o: %.cpp

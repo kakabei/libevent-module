@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include "inifile.h"
+#include "ini_file.h"
 
 using namespace kkb;
 

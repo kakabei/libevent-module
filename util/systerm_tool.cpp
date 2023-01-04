@@ -20,7 +20,8 @@
 #include <iconv.h>
 #include <limits.h>
 #include <sstream>
-#include "systool.h"
+
+#include "systerm_tool.h"
 	
 using namespace std;
 using namespace kkb;

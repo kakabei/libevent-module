@@ -6,13 +6,9 @@
  * @brief:   
  */
 
-#include "server_proc.h"
 #include <string.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include "util/inifile.h"
-
-
 #include <string>
 #include <signal.h>
 #include <event2/event.h>
@@ -22,6 +18,8 @@
 #include <event2/buffer.h>
 #include <arpa/inet.h>
 
+#include "server_proc.h"
+#include "util/ini_file.h"
 
 struct event_base* base;
 
@@ -123,7 +121,7 @@ int CHttpSvrProc::GetVer(struct evhttp_request *req)
 	fprintf(stdout, "Get ver product=%s,guid=%s, zone=%s, ver=%s, new_ver=%s\n",
 				strProduct.c_str(), strGuid.c_str(), strZone.c_str(), strVer.c_str(), strNewVersion.c_str()); 
 
-	char szBuff[1024] = {0
+	char szBuff[1024] = {0};
 	snprintf(szBuff, sizeof(szBuff), "{\"ret\":0, \"msg\":\"ok\", \"product\":\"%s\", \"new_ver\":\"%s\"}",
 				strProduct.c_str(), strNewVersion.c_str());
 
@@ -152,6 +150,7 @@ void  CHttpSvrProc::SetCallBack(struct evhttp *httpd)
 
 int CHttpSvrProc::Run()
 {
+	// 创建基础事件 event_base_new
 	base = event_base_new();
 	if (!base){
 		fprintf(stderr, "Error: careate event base failed.\n"); 
@@ -163,12 +162,14 @@ int CHttpSvrProc::Run()
 	event_assign(&evsignal, base, SIGTERM, EV_SIGNAL|EV_PERSIST, SignalTermHandler, &evsignal);
 	event_add(&evsignal, NULL);
 
+	// 创建 http 事件
 	struct evhttp *httpd = evhttp_new(base);
 	if (!httpd){
 		fprintf(stderr, "Error: create evthttp_new failed."); 		
 		return -1;
 	}
 
+	// 设置回调
     SetCallBack(httpd); 
 	
     struct evhttp_bound_socket *pEvHttpHandle = NULL;
@@ -180,6 +181,7 @@ int CHttpSvrProc::Run()
 	stSockAddr.sin_addr.s_addr = m_nHost;
 	stSockAddr.sin_port = htons(m_nPort);
 
+	// 绑定端口
 	pEvListener = evconnlistener_new_bind(base, 
 										NULL, 
 										NULL,
@@ -192,12 +194,14 @@ int CHttpSvrProc::Run()
 		return -1;
 	}
 
+	// 监控端口
 	pEvHttpHandle = evhttp_bind_listener(httpd, pEvListener);
 	if (pEvHttpHandle == NULL){
 		fprintf(stderr, "Error: evhttp_bind_listener failed.\n");	
 		return -1;
 	}
 
+	// 分发事件
 	event_base_dispatch(base);
 	evhttp_free(httpd);
 	event_base_free(base);

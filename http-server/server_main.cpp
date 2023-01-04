@@ -10,7 +10,7 @@
 #include <signal.h>
 
 #include "server_proc.h"
-#include "util/systool.h"
+#include "util/systerm_tool.h"
 
 #define USAGE_MSG   "Usage: %s  <config_file> \n" 
 
