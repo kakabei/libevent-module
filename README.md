@@ -70,10 +70,10 @@ http-server 是一个简单的 http 服务。
 	}
 
 	// 设置回调
-    evhttp_set_timeout(httpd, m_nTimeout);
+	evhttp_set_timeout(httpd, m_nTimeout);
 	evhttp_set_cb(httpd, "/get_ver", GetVerCallBack, this);
 	
-    struct evhttp_bound_socket *pEvHttpHandle = NULL;
+	struct evhttp_bound_socket *pEvHttpHandle = NULL;
 	struct evconnlistener * pEvListener       = NULL;
 
 	struct sockaddr_in stSockAddr;
@@ -88,10 +88,10 @@ http-server 是一个简单的 http 服务。
 										NULL,
 										LEV_OPT_CLOSE_ON_FREE|LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_EXEC,
 										1024,
-										(struct sockaddr*)&stSockAddr, 
+    									(struct sockaddr*)&stSockAddr, 
 										sizeof(stSockAddr));
 	if (pEvListener == NULL){
-	    fprintf(stderr, "Error: create listener failed.\n"); 	
+		fprintf(stderr, "Error: create listener failed.\n"); 	
 		return -1;
 	}
 
@@ -135,17 +135,17 @@ timer 是一个定时服务。 每隔多少秒执行一次。
 	event_assign(&evsignal, base, SIGTERM, EV_SIGNAL|EV_PERSIST, SignalCallBack, &evsignal);
 	event_add(&evsignal, NULL);
 
-    int flags = 0;
-    struct event timeout;
+	int flags = 0;
+	struct event timeout;
 	struct timeval tv;
 
 	// Initalize one event 
 	event_assign(&timeout, base, -1, flags, TimeoutCallBack, (void*) &timeout);
 	
-    evutil_timerclear(&tv);
+	evutil_timerclear(&tv);
 	tv.tv_sec = interval;
 	event_add(&timeout, &tv);
-    evutil_gettimeofday(&lasttime, NULL);
+	evutil_gettimeofday(&lasttime, NULL);
 
 	// 分发事件
 	event_base_dispatch(base);
@@ -159,7 +159,7 @@ void CTimerProc::TimeoutCallBack(evutil_socket_t fd, short event, void *arg)
 {
 	struct event *timeout = (struct event *)arg;
 	
-    Handler(fd, event, timeout); // 任务处理
+	Handler(fd, event, timeout); // 任务处理
 
 	struct timeval tv;
 	evutil_timerclear(&tv);
@@ -193,8 +193,3 @@ Info : TimeoutCallBack called at 1672844640: 3.003 seconds elapsed.
 Info : TimeoutCallBack called at 1672844643: 3.003 seconds elapsed.
 ```
  
-
-
-
-
-
