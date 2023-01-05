@@ -82,7 +82,9 @@ int CHttpSvrProc::RetMsg(struct evhttp_request *req, const char *buff)
 	return 0;
 }
 
-std::string CHttpSvrProc::FindHttpHeader(struct evhttp_request * req, const char * key)
+char * CHttpSvrProc::FindHttpHeader(struct evhttp_request * req, 
+										struct evkeyvalq * sign_params, 
+										const char * key)
 {
     if (req == NULL){
         fprintf(stderr, "Error: query req failed.\n"); 
@@ -97,33 +99,37 @@ std::string CHttpSvrProc::FindHttpHeader(struct evhttp_request * req, const char
 	}
 
 	char * decode_uri = strdup((char*)evhttp_uri_get_query(req->uri_elems));
-	struct evkeyvalq http_query;
-	evhttp_parse_query_str(decode_uri, &http_query);
+	evhttp_parse_query_str(decode_uri, sign_params);
 	free(decode_uri);
 
-    char * szValue  = (char *)evhttp_find_header(&http_query, key);
-	std::string strValue = szValue;  
-    
-	evhttp_clear_headers(&http_query); // 释放参数链表
+    char * szValue  = (char *)evhttp_find_header(sign_params, key);  
 
-	return strValue; 
+	return szValue; 
 }
 
 int CHttpSvrProc::GetVer(struct evhttp_request *req)
 {
+	struct evkeyvalq sign_params = {0};
+	char * szProduct	= FindHttpHeader(req, &sign_params, "product");
+	char * szGuid		= FindHttpHeader(req, &sign_params, "guid");
+	char * szZone		= FindHttpHeader(req, &sign_params, "zone");
+	char * szVer		= FindHttpHeader(req, &sign_params, "ver");
 
-	std::string strProduct	= FindHttpHeader(req, "product");
-	std::string strGuid	= FindHttpHeader(req, "guid");
-	std::string strZone	= FindHttpHeader(req, "zone");
-	std::string strVer	= FindHttpHeader(req, "ver");
+	evhttp_clear_headers(&sign_params); // 释放参数链表
+
+	if (szProduct == NULL || szGuid == NULL || szZone == NULL || szVer == NULL){
+		fprintf(stderr, "Error: query uri param err.\n"); 	
+		RetMsg(req, "{\"ret\":-1, \"msg\":\"param err\"}");
+		return 0;
+	}
 
 	std::string strNewVersion = "10.20.30";
 	fprintf(stdout, "Get ver product=%s,guid=%s, zone=%s, ver=%s, new_ver=%s\n",
-				strProduct.c_str(), strGuid.c_str(), strZone.c_str(), strVer.c_str(), strNewVersion.c_str()); 
+				szProduct, szGuid, szZone, szVer, strNewVersion.c_str()); 
 
 	char szBuff[1024] = {0};
 	snprintf(szBuff, sizeof(szBuff), "{\"ret\":0, \"msg\":\"ok\", \"product\":\"%s\", \"new_ver\":\"%s\"}",
-				strProduct.c_str(), strNewVersion.c_str());
+				szProduct, strNewVersion.c_str());
 
 	RetMsg(req, szBuff);
 

@@ -27,7 +27,9 @@ public:
     
     void  SetCallBack(struct evhttp *xphttpd);
 
-	std::string  FindHttpHeader(struct evhttp_request * req, const char * key); 
+	char * FindHttpHeader(struct evhttp_request * req, 
+								struct evkeyvalq * sign_params, 
+								const char * key); 
 
 	int RetMsg(struct evhttp_request *req, const char * buff);
 

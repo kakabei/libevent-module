@@ -93,12 +93,12 @@ void CTimerProc::TimeoutCallBack(evutil_socket_t fd, short event, void *arg)
 {
 	struct event *timeout = (struct event *)arg;
 	
-    Handler(fd, event, timeout); 
+    Handler(fd, event, timeout); // 任务处理
 
 	struct timeval tv;
 	evutil_timerclear(&tv);
 	tv.tv_sec = interval;
-	event_add(timeout, &tv);
+	event_add(timeout, &tv);// 重新设置一下
 }
 
 void CTimerProc::Handler(evutil_socket_t fd, short event, void *arg)
