@@ -84,12 +84,12 @@ http-server 是一个简单的 http 服务。
 
 	// 绑定端口
 	pEvListener = evconnlistener_new_bind(base, 
-										NULL, 
-										NULL,
-										LEV_OPT_CLOSE_ON_FREE|LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_EXEC,
-										1024,
-    									(struct sockaddr*)&stSockAddr, 
-										sizeof(stSockAddr));
+					NULL, 
+					NULL,
+					LEV_OPT_CLOSE_ON_FREE|LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_EXEC,
+					1024,
+					(struct sockaddr*)&stSockAddr, 
+					sizeof(stSockAddr));
 	if (pEvListener == NULL){
 		fprintf(stderr, "Error: create listener failed.\n"); 	
 		return -1;
